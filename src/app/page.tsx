@@ -2,31 +2,18 @@
 import { KeyboardEventHandler, useState, ChangeEvent, FormEvent } from 'react';
 
 function Calculator() {
-  const [result, setResult] = useState(0);
   const [input, setInput] = useState('');
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-  };
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setResult(eval(input));
-    setInput('');
-  };
 
   const handleButtonClick = (value: string) => {
     switch (value) {
       case 'C':
         setInput('');
-        setResult(0);
         break;
       case '=':
         try {
-          setResult(eval(input));
           setInput(eval(input));
         } catch (error) {
-          setResult(0);
+          setInput('0');
         }
         break;
       default:
