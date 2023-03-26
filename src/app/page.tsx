@@ -1,91 +1,94 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+'use client';
+import { KeyboardEventHandler, useState, ChangeEvent, FormEvent } from 'react';
 
-const inter = Inter({ subsets: ['latin'] })
+function Calculator() {
+  const [result, setResult] = useState(0);
+  const [input, setInput] = useState('');
 
-export default function Home() {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setResult(eval(input));
+    setInput('');
+  };
+
+  const handleButtonClick = (value: string) => {
+    switch (value) {
+      case 'C':
+        setInput('');
+        setResult(0);
+        break;
+      case '=':
+        try {
+          setResult(eval(input));
+          setInput(eval(input));
+        } catch (error) {
+          setResult(0);
+        }
+        break;
+      default:
+        setInput(input + value);
+    }
+  };
+
+  const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (e) => {
+    const key = e.key;
+    if (key === 'Enter') {
+      handleButtonClick('=');
+    } else if (key === 'Escape') {
+      handleButtonClick('C');
+    } else if (key === 'Backspace') {
+      setInput(input.slice(0, -1));
+    } else if (!isNaN(Number(key))) {
+      setInput(input + Number(key));
+    } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+      setInput(input + key);
+    } else if (key === '.') {
+      if (!input.includes('.')) {
+        setInput(input + key);
+      }
+    }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="calculator" onKeyDown={handleKeyDown}>
+      <div className="display">{input}</div>
+      <div className="buttons">
+        <div className="row">
+          <button onClick={() => handleButtonClick('C')} className="button button-gray">C</button>
+          <button onClick={() => handleButtonClick('-')} className="button button-gray">+/-</button>
+          <button onClick={() => handleButtonClick('%')} className="button button-gray">%</button>
+          <button onClick={() => handleButtonClick('÷')} className="button button-orange">÷</button>
+        </div>
+        <div className="row">
+          <button onClick={() => handleButtonClick('7')} className="button">7</button>
+          <button onClick={() => handleButtonClick('8')} className="button">8</button>
+          <button onClick={() => handleButtonClick('9')} className="button">9</button>
+          <button onClick={() => handleButtonClick('×')} className="button button-orange">×</button>
+        </div>
+        <div className="row">
+          <button onClick={() => handleButtonClick('4')} className="button">4</button>
+          <button onClick={() => handleButtonClick('5')} className="button">5</button>
+          <button onClick={() => handleButtonClick('6')} className="button">6</button>
+          <button onClick={() => handleButtonClick('-')} className="button button-orange">-</button>
+        </div>
+        <div className="row">
+          <button onClick={() => handleButtonClick('1')} className="button">1</button>
+          <button onClick={() => handleButtonClick('2')} className="button">2</button>
+          <button onClick={() => handleButtonClick('3')} className="button">3</button>
+          <button onClick={() => handleButtonClick('+')} className="button button-orange">+</button>
+        </div>
+        <div className="row">
+          <button onClick={() => handleButtonClick('0')} className="button button-zero">0</button>
+          <button onClick={() => handleButtonClick('.')} className="button">.</button>
+          <button onClick={() => handleButtonClick('=')} className="button button-orange">=</button>
         </div>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    </div>
+  );
 }
+
+export default Calculator
